@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1572528396 source:c:\users\oktav\desktop\zad 7\main.cpp
+	<iostream>
+	<cstdlib>
+	<ctime>
+
