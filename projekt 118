@@ -1,0 +1,261 @@
+#include <iostream>
+#include <windows.h>
+#include <conio.h>
+
+using namespace std;
+
+void wstep(); // funkcja wyswietlajaca wstep widoczny dla uzytkownika
+void dane(int &rozm, char &zn); //funkcja pobierajaca dane od uzytkownika
+void okno(int wys, int szer); //funkcja ustawiajaca rozmiar okna
+void gotoxy(int x, int y); //funkcja odpowiadajaca za ustawienie kursora
+void rysuj(int x, int y, int rozm, char zn); //funkcja rysujaca X
+void instr(); //funkcja wyswietlająca instrukcje obsługi X-a
+void przesun(int x, int y, int rozm, char zn); //funkcja odpowiadajaca za przesuwanie sia figury
+void ukryj(); //funkcja ukrywajaca kursor, by nie przeszkadzal min przy przesuwaniu X-a
+
+
+
+int main()
+{
+    int rozm = 0;
+    char zn;
+    int x = 62;
+    int y = 15;
+
+    wstep();
+    instr();
+    dane(rozm, zn);
+    okno(33, 124);
+    gotoxy(x, y);
+    ukryj();
+    rysuj(x, y, rozm, zn);
+    przesun(x, y, rozm, zn);
+}
+
+//*************************************definicje funkcji**************************************************************//
+
+void wstep()  //definicja funkcji wprowadzającej do programu
+{
+    std::cout << "Tresc zadania: \n";
+    std::cout << "Napisz program rysowania znakiem ponizszej figury: \n";
+    std::cout << "\n";
+    std::cout << "\n";
+    std::cout << "---------------\n";
+    std::cout << "|             |\n";
+    std::cout << "|    *    *   |\n";
+    std::cout << "|     *  *    |\n";
+    std::cout << "|      **     |\n";
+    std::cout << "|     *  *    |\n";
+    std::cout << "|    *    *   |\n";
+    std::cout << "|             |\n";
+    std::cout << "---------------\n";
+    std::cout << "\n";
+    std::cout << "\n";
+    std::cout << "Program powinien umozliwiac:\n";
+    std::cout << " * Wybor znaku kodu ASCII,\n";
+    std::cout << " * Wczytanie poczatkowych rozmiarow figury,\n";
+    std::cout << " * Zmiane wielkosci figury klawiszami '+' i '-',\n";
+    std::cout << " * Przesuwanie figury w czterech kierunkach za pomoca kursorow,\n";
+    std::cout << " * Ograniczenie przesuwania i rozmiarow figury do obszaru ekranu.\n";
+    std::cout << "Wykonanie: Oktawia Wiczlinska \n";
+
+    std::cout << "\n Aby rozpoczac, nacisnij dowolny klawisz \n";
+    _getch();
+}
+
+void dane(int &rozm, char &zn) //definicja funkcji pobierajacej dane od uzytkownika
+{
+    system("CLS");
+
+    std::cout << "Podaj dlugosc ramienia X-a, z przedzialu 1-9 i zatwierdz enterem \n";
+    do{
+        while (!( std::cin >> rozm))
+        {
+            std::cin.clear();
+            std::cin.sync();
+        }
+        if (rozm <= 0 || rozm > 10)
+        {
+            std::cout << "Podana dlugosc jest niewlasciwa \n";
+            std::cout << "Prosze podac wartosci liczbowe z zakresu 1-9 i zatwierdzic enterem \n";
+            std::cin >> rozm;
+        }
+        }
+        while (rozm <= 0 || rozm > 10);
+            std::cout << "Wybierz dowolny znak z klawiatury, ktorym ma zostac narysowany X i zatwierdz enterem\n";
+            std::cin >> zn;
+}
+
+void okno (int wys, int szer)// definicja funkcji ustawiającej rozmiar okna
+{
+    _COORD coord;
+    coord.X = szer;
+    coord.Y = wys;
+
+    _SMALL_RECT Rect;
+    Rect.Top = 1;
+    Rect.Left = 0;
+    Rect.Bottom = wys - 1;
+    Rect.Right = szer - 1;
+
+    HANDLE Handle = GetStdHandle(STD_OUTPUT_HANDLE);  // Zaczepienie haka
+    SetConsoleScreenBufferSize(Handle, coord);   // Ustawienie rozmiaru bufora
+    SetConsoleWindowInfo(Handle, TRUE, &Rect);  // Ustawienie rozmiaru okna
+}
+
+void gotoxy(int x, int y)  //definicja funkcji ustawiającej kursor
+{
+    COORD c;
+    c.X = x;
+    c.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+}
+
+void instr()  //definicja przedstawiajaca uzytkownikowi instrukcje programu
+{
+    system("CLS");
+
+    std::cout << "Instrukcja: \n";
+    std::cout << "Aby przesunac X-a, uzyj strzalek z klawiatury \n";
+    std::cout << "Aby powiekszyc X-a nacisnij shift i '+' \n";
+    std::cout << "Aby zmniejszyc X-a nacisnij '-' \n";
+    std::cout << "Jezeli chcesz zaczac, nacisnij dowolny klawisz \n";
+    std::cout << "Aby zakonczyc program, nacisnij ESC \n";
+
+            _getch();
+}
+
+void rysuj(int x, int y, int rozm, char zn)  //definicja rysujaca figure
+{
+    int x1= x;
+    int y1= y;
+
+    system("CLS"); //czyszczenie zawartosci ekranu
+    gotoxy(x, y); //ustawienie punktu zaczepienia X-a
+
+        for (int i=0; i<rozm; i++) // od lewego dolnego do srodka
+    {
+        gotoxy(x1, y1);
+        x1++;
+        y1--;
+        std::cout << zn;
+    }
+        for (int i=0; i<rozm; i++) // od srodka do lewego gornego
+    {
+        gotoxy(x1, y1);
+        x1--;
+        y1--;
+        std::cout << zn;
+    }
+        for (int i=0; i<rozm; i++) // od lewego gornego do srodka
+    {
+        gotoxy(x1, y1);
+        x1++;
+        y1++;
+        std::cout << zn;
+    }
+        for (int i=0; i<rozm; i++) // od srodka do prawego dolnego
+    {
+        gotoxy(x1, y1);
+        x1++;
+        y1++;
+        std::cout << zn;
+    }
+        for (int i=0; i<rozm; i++) // od prawego dolnego do srodka
+    {
+        gotoxy(x1, y1);
+        x1--;
+        y1--;
+        std::cout << zn;
+    }
+        for (int i=0; i<rozm+1; i++) // od srodka do prawego gornego
+    {
+        gotoxy(x1, y1);
+        x1++;
+        y1--;
+        std::cout << zn;
+    }
+}
+
+
+void przesun(int x, int y, int rozm, char zn)  //definicja funkcji odpowiadajacej za zmiane rozmiaru X-a i zmieniajacej jej polozenie
+{
+    int rozm1= rozm;
+    int x1= x;
+    int y1= y;
+    char p;
+
+    do
+    {
+        gotoxy(0, 0);  //punkt zaczepienia
+        rysuj(x1, y1, rozm1, zn);
+        int xmax = 123-(2*rozm1);
+        int xmin = 1;
+        int ymin = 1+(2*rozm1);
+        int ymax = 30;
+        p = _getch();
+
+        switch(p)
+        {
+        case 75: //strzalka w lewo
+            {
+                if( x1 >= xmin)
+                {
+                    x1--;
+                }
+                break;
+            }
+        case 77: //strzalka w prawo
+            {
+                if( x1 < xmax)
+                {
+                    x1++;
+                }
+                break;
+            }
+        case 72: //strzalka w gore
+            {
+                if( y1 >= ymin)
+                {
+                    y1--;
+                }
+                break;
+            }
+        case 80: //strzalka w dól
+            {
+                if( ymax >= y1)
+                {
+                    y1++;
+                }
+                break;
+            }
+        case '+': //powiekszenie
+            {
+                if( rozm1 < 10)
+                {
+                    rozm1++;
+                }
+                break;
+            }
+        case '-': //zmiejszenie
+            {
+                if( rozm1 > 1)
+                {
+                    rozm1--;
+                }
+                break;
+            }
+
+        }
+
+    }while(p != 27);
+
+}
+void ukryj()  //definicja funkcji ukrywajacej kursor
+{
+    ::HANDLE hConsoleOut = ::GetStdHandle(STD_OUTPUT_HANDLE);
+    ::CONSOLE_CURSOR_INFO hCCI;
+    ::GetConsoleCursorInfo(hConsoleOut, &hCCI);
+    hCCI.bVisible = FALSE;
+    ::SetConsoleCursorInfo(hConsoleOut, &hCCI);
+}
